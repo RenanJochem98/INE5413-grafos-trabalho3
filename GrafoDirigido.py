@@ -1,3 +1,4 @@
+from Vertice import Vertice
 from Grafo import Grafo
 from Arco import Arco
 
@@ -18,12 +19,23 @@ class GrafoDirigido(Grafo):
         return "Grafo dirigido"
 
     def criarGrafoTransposto(self):
-        vertices = self.vertices[:] # para nao ficar na mesma posicao de memoria
+        vertices = list(map(lambda v: Vertice(v.numero, v.rotulo), self.vertices)) # para nao ficar na mesma posicao de memoria
         novoGrafo = GrafoDirigido(vertices)
-        for v in novoGrafo.vertices:
-            v.apagarTodasRelacoes()
 
         for key in self.relacoes:
             arcoAtual = self.relacoes[key]
             novoGrafo.adicionarRelacao(arcoAtual.v2, arcoAtual.v1, arcoAtual.peso)
+
         return novoGrafo
+
+    def vizinhos(self, v):
+        vizinhos = []
+        for relacao in self.vertices[v - 1].relacoes.values():
+            if relacao.v1.numero == v:
+                vizinhos.append(relacao.v2)
+            else:
+                vizinhos.append(relacao.v1)
+        return vizinhos
+
+    def obterVizinhosSaintes(self, v):
+        return self.vertices[v - 1].obterVizinhosSaintes()

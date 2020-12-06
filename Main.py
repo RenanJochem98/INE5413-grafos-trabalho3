@@ -8,10 +8,12 @@ from LeitorGrafo import LeitorGrafo
 # arquivo = "arquivos-teste/manha_ord_topologica.net"
 # arquivo = "arquivos-teste/ord_topologica.net"
 # arquivo = "arquivos-teste/fortemente_contexo_aula.net"
-arquivo = "arquivos-teste/kruskal.net"
+# arquivo = "arquivos-teste/kruskal.net"
 # arquivo = "arquivos-teste/tcc_completo.net"
 # arquivo = "arquivos-teste/agm_tiny_aresta.net"
 # arquivo = "arquivos-teste/agm_tiny_arco.net"
+arquivo = "arquivos-teste/fluxo_maximo/db5.gr"
+
 global grafo
 grafo = LeitorGrafo.lerGrafoDoArquivo(arquivo)
 exec = GrafoExecutor()
@@ -34,7 +36,7 @@ def solicitarOpcao(texto, min, max, maxTentativas = 3):
 
 def solicitarVertice(texto="Digite o número do vertice: "):
     try:
-        v = solicitarOpcao(texto, 1, exec.qtdVertices(g))
+        v = solicitarOpcao(texto, 1, exec.qtdVertices(grafo))
         if v > 0:
             return v
         else:
@@ -98,6 +100,14 @@ def verificarSeHaRelacao():
         nao = "" if haRelacao else " não"
         print(f'O vértice {v}{nao} possui uma relacao para {u}')
 
+def encontrarFluxoMaximo():
+    s = solicitarVertice("Digite o número do vértice de origem (s): ")
+    t = solicitarVertice("Digite o número do vértice de destino (t): ")
+    if s > 0 and t > 0:
+        print("Buscando fluxo máximo entre s =", s, "e t =", t)
+        fluxoMaximo = exec.buscarFluxoMaximo(grafo, s, t)
+        print('Fluxo máximo:', fluxoMaximo)
+
 
 # lista com funcoes que serao executadas
 acoes = [
@@ -107,7 +117,8 @@ acoes = [
     {"texto": "Ver a quantidade de Relacoes", "funcao": mostrarQtdRelacoes},
     {"texto": "Grau do vértice", "funcao": verGrau},
     {"texto": "Rótulo do vértice", "funcao": verRotulo},
-    {"texto": "Vizinhos do vértice", "funcao": verVizinhos}
+    {"texto": "Vizinhos do vértice", "funcao": verVizinhos},
+    {"texto": "Buscar Fluxo Máximo", "funcao": encontrarFluxoMaximo}
 ]
 
 user_input = -1

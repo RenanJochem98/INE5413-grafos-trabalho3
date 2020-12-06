@@ -1,13 +1,17 @@
 from Grafo import Grafo
 from GrafoDirigido import GrafoDirigido
+from FluxoMaximo import FluxoMaximo
 
 class GrafoExecutor:
 
+    def buscarFluxoMaximo(self, grafo: GrafoDirigido, s: int, t: int):
+        return FluxoMaximo.buscarFluxoMaximo(grafo, s, t)
+
     def qtdVertices(self, grafo:Grafo):
-        return grafo.numeroDeVertices
+        return grafo.qtdVertices()
 
     def qtdRelacoes(self, grafo:Grafo):
-        return grafo.numeroDeRelacoes
+        return grafo.qtdArestas()
 
     def grau(self, grafo:Grafo,  v):
         return len(grafo.vertices[v - 1].relacoes)
@@ -16,12 +20,10 @@ class GrafoExecutor:
         return grafo.vertices[v - 1].rotulo
 
     def vizinhos(self, grafo:Grafo, v):
-        vertice = grafo.vertices[v - 1]
-        return list(map(lambda r: r.obterOutraParte(vertice), vertice.relacoes.values()))
+        return grafo.vizinhos(v)
 
     def haRelacao(self, grafo:Grafo, u, v):
-        return grafo.vertices[u - 1].ehVizinhoDe(grafo.vertices[v - 1])
+        return grafo.haRelacao(u, v)
 
     def peso(self, grafo:Grafo, u, v):
-        relacao = grafo.vertices[u - 1].encontrarRelacaoPara(grafo.vertices[v - 1])
-        return relacao.peso if relacao != None else float("inf")
+        return grafo.peso(u, v, float("inf"))

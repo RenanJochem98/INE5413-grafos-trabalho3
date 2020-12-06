@@ -6,11 +6,20 @@ from GrafoNaoDirigido import GrafoNaoDirigido
 class LeitorGrafo:
 
     def lerGrafoDoArquivo(arquivo: str):
+        if arquivo.lower().endswith(".net"):
+            return LeitorGrafo.lerGrafoDoArquivoNet(arquivo)
+        elif arquivo.lower().endswith(".gr"):
+            return LeitorGrafo.lerGrafoDoArquivoGr(arquivo)
+        else:
+            raise Exception("Formato de arquivo desconhecido")
+    lerGrafoDoArquivo = staticmethod(lerGrafoDoArquivo)
+
+    def lerGrafoDoArquivoNet(arquivo: str):
         f = open(arquivo, "r", encoding='utf-8')
         linhas = f.readlines()
         f.close()
 
-        vertices = LeitorGrafo.__lerVertices(linhas)
+        vertices = LeitorGrafo.__lerVerticesNet(linhas)
         numeroDeVertices = len(vertices)
         tipoRelacao = linhas[numeroDeVertices + 1].strip().lower()
         grafo = None
@@ -21,11 +30,12 @@ class LeitorGrafo:
         else:
             raise Exception("Não foi possível identificar o tipo de grafo")
 
-        LeitorGrafo.__lerRelacoes(linhas[numeroDeVertices + 2:], grafo)
+        LeitorGrafo.__lerRelacoesNet(linhas[numeroDeVertices + 2:], grafo)
         return grafo
-    lerGrafoDoArquivo = staticmethod(lerGrafoDoArquivo)
 
-    def __lerVertices(linhas):
+    lerGrafoDoArquivoNet = staticmethod(lerGrafoDoArquivoNet)
+
+    def __lerVerticesNet(linhas):
         numeroDeVertices = int(linhas[0].split(" ")[1])
         vertices = []
         for i in range(1, numeroDeVertices + 1):
@@ -37,11 +47,10 @@ class LeitorGrafo:
             rotulo = linha[posicaoInicioRotulo:posicaoFimRotulo]
             vertices.append(Vertice(numeroVertice, rotulo))
         return vertices
+    __lerVerticesNet = staticmethod(__lerVerticesNet)
 
-    __lerVertices = staticmethod(__lerVertices)
 
-
-    def __lerRelacoes(linhas, grafo: Grafo):
+    def __lerRelacoesNet(linhas, grafo: Grafo):
         for linha in linhas:
             valores = linha.split(" ")
             v1 = grafo.vertices[int(valores[0]) - 1]
@@ -50,4 +59,30 @@ class LeitorGrafo:
             if (len(valores) >= 3):
                 peso = float(valores[2])
             grafo.adicionarRelacao(v1, v2, peso)
-    __lerRelacoes = staticmethod(__lerRelacoes)
+    __lerRelacoesNet = staticmethod(__lerRelacoesNet)
+
+
+    def lerGrafoDoArquivoGr(arquivo: str):
+        f = open(arquivo, "r", encoding='utf-8')
+        linhas = f.readlines()
+        f.close()
+
+        grafo = None
+        for i in range(0, len(linhas)):
+            valores = linhas[i].split(" ")
+            if valores[0] == "p":
+                numVertices = int(valores[2])
+                vertices = list(map(lambda v: Vertice(v, str(v)), range(1, numVertices + 1)))
+                if valores[1] == "max":
+                    grafo = GrafoDirigido(vertices)
+                elif valores[1] == "edge":
+                    grafo = GrafoNaoDirigido(vertices)
+            elif valores[0] == "a":
+                v1 = grafo.vertices[int(valores[1]) - 1]
+                v2 = grafo.vertices[int(valores[2]) - 1]
+                peso = 1
+                if (len(valores) >= 4):
+                    peso = float(valores[3])
+                grafo.adicionarRelacao(v1, v2, peso)
+        return grafo
+    lerGrafoDoArquivoGr = staticmethod(lerGrafoDoArquivoGr)

@@ -12,3 +12,18 @@ class Vertice:
 
     def apagarTodasRelacoes(self):
         self.relacoes = {}
+
+    def obterVizinhosSaintes(self):
+        saintes = []
+
+        for relacao in self.relacoes.values():
+            if relacao.ehVerticeOrigem(self):
+                saintes.append(relacao.obterVerticeDestino(self))
+        
+        return saintes
+
+    def ehVizinhoDe(self, v):
+        for relacao in self.relacoes.values():
+            if relacao.v1.numero == v or relacao.v2.numero == v:
+                return True
+        return False

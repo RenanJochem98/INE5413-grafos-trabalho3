@@ -15,3 +15,7 @@ class GrafoNaoDirigido(Grafo):
 
     def obterTipoGrafo(self):
         return "Grafo não-dirigido"
+
+    def vizinhos(self, v):
+        vertice = self.vertices[v - 1]
+        return list(map(lambda r: r.obterVerticeDestino(vertice), vertice.relacoes.values()))
