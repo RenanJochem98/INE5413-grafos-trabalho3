@@ -12,10 +12,11 @@ from LeitorGrafo import LeitorGrafo
 # arquivo = "arquivos-teste/tcc_completo.net"
 # arquivo = "arquivos-teste/agm_tiny_aresta.net"
 # arquivo = "arquivos-teste/agm_tiny_arco.net"
-arquivo = "arquivos-teste/fluxo_maximo/db5.gr"
+# arquivo = "arquivos-teste/fluxo_maximo/db5.gr"
+arquivo = "arquivos-teste/emparelhamento_maximo/pequeno.gr"
 
 global grafo
-grafo = LeitorGrafo.lerGrafoDoArquivo(arquivo)
+grafo = LeitorGrafo.lerGrafoDoArquivo(arquivo, True)
 exec = GrafoExecutor()
 
 def solicitarOpcao(texto, min, max, maxTentativas = 3):
@@ -46,13 +47,19 @@ def solicitarVertice(texto="Digite o número do vertice: "):
         return 0
 
 def carregarArquivo():
-    arquivoPadrao = "grafo.teste.net"
+    _carregarArquivo(False)
+
+def carregarGrafoBipartido():
+    _carregarArquivo(True)
+
+def _carregarArquivo(bipartido: bool):
+    arquivoPadrao = "arquivos-teste/grafo.teste.net" if not bipartido else "arquivos-teste/emparelhamento_maximo/pequeno.gr"
     arquivo = input("Digite o nome do arquivo (em branco carrega " + arquivoPadrao + "): ")
     try:
         if arquivo == "":
             arquivo = arquivoPadrao
         global grafo
-        grafo = LeitorGrafo.lerGrafoDoArquivo(arquivo)
+        grafo = LeitorGrafo.lerGrafoDoArquivo(arquivo, bipartido)
         print("Arquivo " + arquivo + " carregado com sucesso.")
     except Exception as ex:
         print("Não foi possível ler o arquivo!")
@@ -108,17 +115,24 @@ def encontrarFluxoMaximo():
         fluxoMaximo = exec.buscarFluxoMaximo(grafo, s, t)
         print('Fluxo máximo:', fluxoMaximo)
 
+def encontrarEmparelhamentoMaximo():
+    print("Buscando emparelhamento máximo")
+    emparelhamentoMax = exec.buscarEmparelhamentoMaximo(grafo)
+    print('emparelhamentoMax:', emparelhamentoMax)
+
 
 # lista com funcoes que serao executadas
 acoes = [
     {"texto": "Carregar um arquivo", "funcao": carregarArquivo},
+    {"texto": "Carregar arquivo de Grafo BIPARTIDO", "funcao": carregarGrafoBipartido},
     {"texto": "Mostrar o grafo", "funcao": mostrarGrafo},
     {"texto": "Ver a quantidade de Vértices", "funcao": mostrarQtdVertices},
     {"texto": "Ver a quantidade de Relacoes", "funcao": mostrarQtdRelacoes},
     {"texto": "Grau do vértice", "funcao": verGrau},
     {"texto": "Rótulo do vértice", "funcao": verRotulo},
     {"texto": "Vizinhos do vértice", "funcao": verVizinhos},
-    {"texto": "Buscar Fluxo Máximo", "funcao": encontrarFluxoMaximo}
+    {"texto": "Buscar Fluxo Máximo", "funcao": encontrarFluxoMaximo},
+    {"texto": "Buscar Emparelhamento Máximo", "funcao": encontrarEmparelhamentoMaximo}
 ]
 
 user_input = -1

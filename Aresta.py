@@ -18,3 +18,6 @@ class Aresta(Relacao):
             return self.v1
         else:
             raise Exception('O vértice de destino informado não faz parte da aresta')
+
+    def ehVerticeOrigem(self, vertice:Vertice):
+        return True

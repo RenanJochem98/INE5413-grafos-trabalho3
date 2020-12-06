@@ -2,14 +2,15 @@ from Vertice import Vertice
 from Grafo import Grafo
 from GrafoDirigido import GrafoDirigido
 from GrafoNaoDirigido import GrafoNaoDirigido
+from GrafoBipartido import GrafoBipartido
 
 class LeitorGrafo:
 
-    def lerGrafoDoArquivo(arquivo: str):
+    def lerGrafoDoArquivo(arquivo: str, bipartido: bool = False):
         if arquivo.lower().endswith(".net"):
             return LeitorGrafo.lerGrafoDoArquivoNet(arquivo)
         elif arquivo.lower().endswith(".gr"):
-            return LeitorGrafo.lerGrafoDoArquivoGr(arquivo)
+            return LeitorGrafo.lerGrafoDoArquivoGr(arquivo, bipartido)
         else:
             raise Exception("Formato de arquivo desconhecido")
     lerGrafoDoArquivo = staticmethod(lerGrafoDoArquivo)
@@ -62,11 +63,11 @@ class LeitorGrafo:
     __lerRelacoesNet = staticmethod(__lerRelacoesNet)
 
 
-    def lerGrafoDoArquivoGr(arquivo: str):
+    def lerGrafoDoArquivoGr(arquivo: str, bipartido: bool):
         f = open(arquivo, "r", encoding='utf-8')
         linhas = f.readlines()
         f.close()
-
+        
         grafo = None
         for i in range(0, len(linhas)):
             valores = linhas[i].split(" ")
@@ -76,13 +77,20 @@ class LeitorGrafo:
                 if valores[1] == "max":
                     grafo = GrafoDirigido(vertices)
                 elif valores[1] == "edge":
-                    grafo = GrafoNaoDirigido(vertices)
-            elif valores[0] == "a":
+                    if bipartido:
+                        grafo = GrafoBipartido(vertices)
+                    else:
+                        grafo = GrafoNaoDirigido(vertices)
+            elif valores[0] == "a" or valores[0] == "e":
                 v1 = grafo.vertices[int(valores[1]) - 1]
                 v2 = grafo.vertices[int(valores[2]) - 1]
                 peso = 1
                 if (len(valores) >= 4):
                     peso = float(valores[3])
                 grafo.adicionarRelacao(v1, v2, peso)
+
+        if bipartido:
+            grafo.lerParticoes()
+
         return grafo
     lerGrafoDoArquivoGr = staticmethod(lerGrafoDoArquivoGr)

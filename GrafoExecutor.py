@@ -1,11 +1,16 @@
 from Grafo import Grafo
 from GrafoDirigido import GrafoDirigido
+from GrafoBipartido import GrafoBipartido
 from FluxoMaximo import FluxoMaximo
+from EmparelhamentoMaximo import EmparelhamentoMaximo
 
 class GrafoExecutor:
 
     def buscarFluxoMaximo(self, grafo: GrafoDirigido, s: int, t: int):
         return FluxoMaximo.buscarFluxoMaximo(grafo, s, t)
+
+    def buscarEmparelhamentoMaximo(self, grafo: GrafoBipartido):
+        return EmparelhamentoMaximo.buscarEmparelhamentoMaximo(grafo)
 
     def qtdVertices(self, grafo:Grafo):
         return grafo.qtdVertices()

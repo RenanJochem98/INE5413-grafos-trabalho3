@@ -15,3 +15,7 @@ class Relacao(ABC):
     @abstractmethod
     def obterVerticeOrigem(self, verticeDestino):
         pass
+
+    @abstractmethod
+    def ehVerticeOrigem(self, vertice):
+        pass
