@@ -6,7 +6,7 @@ class EmparelhamentoMaximo:
 
     def buscarEmparelhamentoMaximo(grafo: GrafoBipartido):
         if type(grafo) is not GrafoBipartido:
-            raise Exception("A busca pelo emparelhamento máximo funciona apenas com grafos bipartidos.")
+            raise Exception("A busca pelo emparelhamento máximo funciona apenas com grafos bipartidos. Utilize a opção \"Carregar arquivo de Grafo BIPARTIDO\" para ler o arquivo do grafo.")
 
         d = [float("inf")] * (grafo.qtdVertices() + 1)
         mate = [0] * (grafo.qtdVertices() + 1)

@@ -1,8 +1,10 @@
 from Grafo import Grafo
 from GrafoDirigido import GrafoDirigido
 from GrafoBipartido import GrafoBipartido
+from GrafoNaoDirigido import GrafoNaoDirigido
 from FluxoMaximo import FluxoMaximo
 from EmparelhamentoMaximo import EmparelhamentoMaximo
+from ColoracaoMinima import ColoracaoMinima
 
 class GrafoExecutor:
 
@@ -11,6 +13,9 @@ class GrafoExecutor:
 
     def buscarEmparelhamentoMaximo(self, grafo: GrafoBipartido):
         return EmparelhamentoMaximo.buscarEmparelhamentoMaximo(grafo)
+
+    def buscarColoracaoMinima(self, grafo: GrafoNaoDirigido):
+        return ColoracaoMinima.buscar(grafo)
 
     def qtdVertices(self, grafo:Grafo):
         return grafo.qtdVertices()
