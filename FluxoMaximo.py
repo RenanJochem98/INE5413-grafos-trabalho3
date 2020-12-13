@@ -9,25 +9,26 @@ class FluxoMaximo:
             raise Exception("Busca do fluxo máximo funciona apenas com grafos dirigidos.")
         
         novoGrafo = FluxoMaximo.inserirVerticesArtificiaisSeNecessario(grafo)
+        redeResidual = FluxoMaximo.criarRedeResidual(novoGrafo)
         
-        f = dict(map(lambda r: ((r.v1.numero - 1, r.v2.numero - 1), 0), novoGrafo.relacoes.values()))
-        p = FluxoMaximo.buscarCaminhoAumentante(novoGrafo, s, t, f)
+        p = FluxoMaximo.buscarCaminhoAumentante(redeResidual, s, t)
         fluxoMaximo = 0
         while p != None:
-            cf = min(map(lambda x: novoGrafo.obterRelacao(x[1] + 1, p[ x[0] + 1 ] + 1).peso, enumerate(p[:-1])))
+            cf = min(map(lambda x: FluxoMaximo.cf(redeResidual, x[1], p[ x[0] + 1 ]), enumerate(p[:-1])))
             for i in range(0, len(p) - 1):
                 u = p[i]
                 v = p[i + 1]
-                f[(u, v)] += cf
+                # aumenta o fluxo com a menor capacidade residual possível
+                redeResidual.obterRelacao(v + 1, u + 1).peso += cf
 
             fluxoMaximo += cf
-            p = FluxoMaximo.buscarCaminhoAumentante(novoGrafo, s, t, f)
+            p = FluxoMaximo.buscarCaminhoAumentante(redeResidual, s, t)
 
         return fluxoMaximo
     
     def inserirVerticesArtificiaisSeNecessario(grafo: GrafoDirigido):
         vertices = list(map(lambda v: Vertice(v.numero, v.rotulo), grafo.vertices))
-        mairoNumVertice = max(map(lambda v: v.numero, vertices))
+        maiorNumVertice = max(map(lambda v: v.numero, vertices))
         novoGrafo = GrafoDirigido(vertices)
 
         for key in grafo.relacoes:
@@ -37,18 +38,26 @@ class FluxoMaximo:
 
                 idArcoRetorno = grafo.gerarIdRelacao(arcoAtual.v2, arcoAtual.v1)
                 if idArcoRetorno in grafo.relacoes:
-                    mairoNumVertice = mairoNumVertice + 1
-                    vertice = Vertice(mairoNumVertice, "Artificial " + str(mairoNumVertice))
+                    maiorNumVertice = maiorNumVertice + 1
+                    vertice = Vertice(maiorNumVertice, "Artificial " + str(maiorNumVertice))
                     novoGrafo.vertices.append(vertice)
                     novoGrafo.adicionarRelacao(arcoAtual.v2, vertice.numero, arcoAtual.peso)
                     novoGrafo.adicionarRelacao(vertice.numero, arcoAtual.v1, arcoAtual.peso)
 
         return novoGrafo
 
-    def buscarCaminhoAumentante(grafo: GrafoDirigido, s: int, t: int, f: dict):
+    def criarRedeResidual(grafo: GrafoDirigido):
+        vertices = list(map(lambda v: Vertice(v.numero, v.rotulo), grafo.vertices))
+        redeResidual = GrafoDirigido(vertices)
+        for arco in grafo.relacoes.values():
+            redeResidual.adicionarRelacao(arco.v1, arco.v2, arco.peso)
+            redeResidual.adicionarRelacao(arco.v2, arco.v1, 0)
+        return redeResidual
+
+    def buscarCaminhoAumentante(redeResidual: GrafoDirigido, s: int, t: int):
         # utiliza o número de vértices para inicializar os itens dos arrays com os valores default
-        visitados = [False] * grafo.qtdVertices()
-        ancestrais = [None] * grafo.qtdVertices()
+        visitados = [False] * redeResidual.qtdVertices()
+        ancestrais = [None] * redeResidual.qtdVertices()
 
         # define os valores para o vértice inicial
         visitados[s - 1] = True
@@ -60,16 +69,13 @@ class FluxoMaximo:
         while not fila.empty():
             u = fila.get()
 
-            vizinhos = grafo.obterVizinhosSaintes(u + 1)
+            vizinhos = redeResidual.obterVizinhosSaintes(u + 1)
             # o método obterVizinhosSaintes() recebe o número do vértice, portando precisa somar 1 ao índice do array
             for verticeDestino in vizinhos:
                 # passa por cada vizinho e verifica se o mesmo ainda não foi visitado e se há fluxo residual
                 v = verticeDestino.numero - 1
-                capacidade = grafo.peso(u + 1, v + 1, 0)
-                fluxo = f[(u, v)]
-                cf = capacidade - fluxo
                 
-                if (not visitados[v]) and (cf > 0):
+                if (not visitados[v]) and (FluxoMaximo.cf(redeResidual, u, v) > 0):
                     # marca o vizinho como visitado e seta seu ancestral
                     visitados[v] = True
                     ancestrais[v] = u
@@ -88,6 +94,13 @@ class FluxoMaximo:
 
         return None
 
+    def cf(redeResidual: GrafoDirigido, u: int, v: int):
+        capacidade = redeResidual.peso(u + 1, v + 1, 0)
+        fluxo = redeResidual.peso(v + 1, u + 1, 0)
+        return capacidade - fluxo
+
     inserirVerticesArtificiaisSeNecessario = staticmethod(inserirVerticesArtificiaisSeNecessario)
+    criarRedeResidual = staticmethod(criarRedeResidual)
+    cf = staticmethod(cf)
     buscarFluxoMaximo = staticmethod(buscarFluxoMaximo)
     buscarCaminhoAumentante = staticmethod(buscarCaminhoAumentante)

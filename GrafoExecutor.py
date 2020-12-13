@@ -2,7 +2,7 @@ from Grafo import Grafo
 from GrafoDirigido import GrafoDirigido
 from GrafoBipartido import GrafoBipartido
 from GrafoNaoDirigido import GrafoNaoDirigido
-from FluxoMaximo import FluxoMaximo
+from FluxoMaximoComRedeResidual import FluxoMaximo
 from EmparelhamentoMaximo import EmparelhamentoMaximo
 from ColoracaoMinima import ColoracaoMinima
 
